@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Теория ЕГЭ по информатике</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: справочник-«тетрадь в клетку»: боковой указатель заданий + колонка чтения ~70 знаков */
+:root{
+  --bg:#f3f5f8;
+  --surface:#ffffff;
+  --ink:#16202c;
+  --muted:#5a6676;
+  --line:#dce2ea;
+  --accent:#1f56c9;
+  --accent-soft:#e6eefc;
+  --warn:#9a5b00;
+  --warn-soft:#fff3dd;
+  --code-bg:#f7f9fc;
+  --c-kw:#7a2fb5; --c-str:#1d7a45; --c-com:#7b8594; --c-num:#b2470b; --c-fn:#1f56c9;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e131a; --surface:#151c26; --ink:#e4e9f0; --muted:#97a3b3; --line:#263140;
+    --accent:#7aa5ff; --accent-soft:#1a2740; --warn:#f0b75c; --warn-soft:#2e2412; --code-bg:#111821;
+    --c-kw:#d09bff; --c-str:#7fd8a0; --c-com:#76839a; --c-num:#ffab70; --c-fn:#7aa5ff;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e131a; --surface:#151c26; --ink:#e4e9f0; --muted:#97a3b3; --line:#263140;
+  --accent:#7aa5ff; --accent-soft:#1a2740; --warn:#f0b75c; --warn-soft:#2e2412; --code-bg:#111821;
+  --c-kw:#d09bff; --c-str:#7fd8a0; --c-com:#76839a; --c-num:#ffab70; --c-fn:#7aa5ff;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:28px 28px;background-attachment:fixed}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.app{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+/* sidebar */
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--surface);border-right:1px solid var(--line);padding:20px 14px 40px;display:flex;flex-direction:column;gap:12px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.25;text-decoration:none;color:var(--ink);padding:0 8px}
+.brand small{display:block;font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted);margin-top:4px}
+.search{width:100%;font:inherit;font-size:15px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.nav a{display:grid;grid-template-columns:40px 1fr;gap:6px;align-items:baseline;padding:6px 8px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:14.5px;line-height:1.35}
+.nav a:hover{background:var(--accent-soft)}
+.nav a.active{background:var(--accent);color:var(--surface)}
+.nav a.active .num{color:var(--surface)}
+.nav .num{font-family:var(--f-mono);font-weight:600;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
+.nav .new{color:var(--warn);font-weight:600;font-size:12px;margin-left:4px}
+.nav a.active .new{color:var(--surface)}
+.nav .sep{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px 8px 4px}
+.side .theme{margin-top:auto;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+/* mobile bar */
+.topbar{display:none}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;inset:0;z-index:20;height:100%;width:100%;transform:translateX(-100%);transition:transform .2s ease}
+  .side.open{transform:none}
+  .topbar{display:flex;position:sticky;top:0;z-index:10;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .topbar button{font:inherit;font-size:15px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+  .topbar .t{font-family:var(--f-display);font-size:14px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .side .close{display:block}
+}
+.side .close{display:none;font:inherit;font-size:15px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+@media (prefers-reduced-motion: reduce){.side{transition:none}}
+/* main */
+main{padding:36px 28px 80px;min-width:0}
+.page{display:none;max-width:780px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:34px 38px 40px}
+.page.show{display:block}
+@media (max-width:600px){main{padding:16px 10px 60px}.page{padding:22px 18px 28px;border-radius:10px}}
+.kicker{font-family:var(--f-mono);font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.02em}
+h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.2;margin:6px 0 14px;text-wrap:balance}
+h2{font-size:21px;line-height:1.3;margin:30px 0 10px;text-wrap:balance;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:20px 0 6px}
+p,ul,ol{margin:0 0 12px}
+ul,ol{padding-left:22px}
+li{margin:3px 0}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.badge{font-size:13px;font-weight:500;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);border:1px solid transparent}
+.badge.w{background:var(--warn-soft);color:var(--warn)}
+.note{border-left:4px solid var(--warn);background:var(--warn-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+.note p:last-child,.tip p:last-child{margin:0}
+.f{font-family:var(--f-mono);font-size:15px;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0;overflow-x:auto;white-space:pre}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--code-bg);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.code{position:relative;margin:12px 0 16px}
+.code pre{margin:0;font-family:var(--f-mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto}
+.code pre code{border:0;padding:0;background:none;font-size:inherit}
+.code .copy{position:absolute;top:8px;right:8px;font:inherit;font-size:12px;padding:3px 9px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--muted);cursor:pointer}
+.code .lbl{font-size:12px;color:var(--muted);margin-bottom:4px;font-family:var(--f-mono)}
+.kw{color:var(--c-kw);font-weight:600}.st{color:var(--c-str)}.cm{color:var(--c-com);font-style:italic}.nu{color:var(--c-num)}.fn{color:var(--c-fn)}
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:14px 0}
+.tile{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--ink);background:var(--bg);font-size:14px;line-height:1.3}
+.tile:hover{border-color:var(--accent)}
+.tile b{font-family:var(--f-mono);color:var(--accent);font-size:15px}
+.tile.ch{border-color:var(--warn)}
+.tile.ch b{color:var(--warn)}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:34px;padding-top:18px;border-top:1px solid var(--line)}
+.pager a{text-decoration:none;font-size:15px;padding:8px 14px;border:1px solid var(--line);border-radius:8px;color:var(--ink)}
+.pager a:hover{border-color:var(--accent);color:var(--accent)}
+.empty{font-size:14px;color:var(--muted);padding:6px 8px;display:none}
+</style>
+</head>
+<body>
+<div class="topbar"><button type="button" id="openNav" aria-controls="side">☰ Задания</button><span class="t" id="topTitle">ЕГЭ · Информатика</span></div>
+<div class="app">
+<aside class="side" id="side">
+  <button type="button" class="close" id="closeNav">Закрыть список</button>
+  <a class="brand" href="#home">Теория ЕГЭ<br>по информатике<small>Все 27 заданий · формат 2027</small></a>
+  <label for="q" class="empty" style="display:none">Поиск</label>
+  <input class="search" id="q" type="search" placeholder="Поиск: маска, рекурсия, графы…" autocomplete="off">
+  <ul class="nav" id="nav"></ul>
+  <div class="empty" id="noRes">Ничего не найдено</div>
+  <button type="button" class="theme" id="themeBtn">Сменить тему</button>
+</aside>
+<main id="main">
+
+<!-- ======================= HOME ======================= -->
+<section class="page" id="home" data-title="Обзор экзамена" data-kw="структура баллы время изменения 2027">
+  <div class="kicker">КЕГЭ · 27 заданий · 235 минут</div>
+  <h1>Теория ко всем заданиям ЕГЭ по информатике</h1>
+  <p>Для каждого задания: что проверяется, нужная теория, порядок решения, шаблон кода на Python и типичные ошибки. Экзамен сдаётся на компьютере, поэтому почти все задания можно решать программой, а таблицы и ручные методы нужны как запасной путь и для проверки.</p>
+  <div class="badges"><span class="badge">27 заданий</span><span class="badge">235 минут</span><span class="badge">29 первичных баллов</span><span class="badge">1–25: по 1 баллу</span><span class="badge">26 и 27: по 2 балла</span></div>
+
+  <div class="note"><p><b>Что меняется в 2027 году</b> (по проекту демоверсии ФИПИ, опубликованному в августе 2026):</p>
+  <ul>
+    <li><b>Задание 10</b> теперь про маску подсети (раньше это было задание 13, а поиск слов в текстовом редакторе убран).</li>
+    <li><b>Задание 13</b> теперь про анализ хода исполнения алгоритма (тема бывшего задания 23).</li>
+    <li><b>Задание 23</b> новое: алгоритмические задачи на графах.</li>
+    <li><b>Задание 27</b>: ответ записывается одной строкой из двух чисел вместо двух строк.</li>
+    <li>Файлы к заданиям переходят на отечественное и открытое ПО (LibreOffice вместо Microsoft Office).</li>
+  </ul>
+  <p>Проект мог быть уточнён после обсуждения. Сверяйтесь с финальной демоверсией на <a href="https://fipi.ru/ege/demoversii-specifikacii-kodifikatory">fipi.ru</a>.</p></div>
+
+  <h2>Карта заданий</h2>
+  <p>Оранжевая рамка: тема изменена в 2027 году.</p>
+  <div class="grid" id="tiles"></div>
+
+  <h2>Как распределять время</h2>
+  <ul>
+    <li>Задания 1–12 и 14–16 решаются за 2–5 минут каждое. Не застревайте: пропустите и вернитесь.</li>
+    <li>Готовьте заранее заготовки кода для 2, 5, 8, 12, 14, 15, 16, 17, 19–21, 24, 25: на экзамене останется только поменять условие.</li>
+    <li>Задания 26 и 27 стоят по 2 балла, но 2 балла даются только за оба верных числа. За одно верное число дают 1 балл.</li>
+    <li>Оставьте 10 минут в конце, чтобы проверить формат ответов: целые числа, порядок чисел, отсутствие пробелов.</li>
+  </ul>
+
+  <h2>Полезные ресурсы</h2>
+  <ul>
+    <li><a href="https://fipi.ru/ege/demoversii-specifikacii-kodifikatory">ФИПИ</a>: демоверсия, спецификация, кодификатор, открытый банк заданий.</li>
+    <li><a href="https://kompege.ru">kompege.ru</a>: тренажёр в интерфейсе компьютерного ЕГЭ.</li>
+    <li><a href="https://kpolyakov.spb.ru/school/ege.htm">Сайт К. Ю. Полякова</a>: тысячи задач по номерам заданий с ответами.</li>
+  </ul>
+</section>
+
+<!-- ======================= PYTHON ======================= -->
+<section class="page" id="python" data-title="Шпаргалка Python" data-kw="python файл чтение itertools counter sorted lambda">
+  <div class="kicker">База для всех заданий</div>
+  <h1>Шпаргалка по Python для ЕГЭ</h1>
+  <h2>Чтение файлов</h2>
+<script type="text/x-py">
+# одно число в строке
+a = [int(x) for x in open('17.txt')]
+
+# первая строка — параметры, дальше — данные
+f = open('26.txt')
+S, N = map(int, f.readline().split())
+data = [int(x) for x in f]
+
+# одна длинная строка символов
+s = open('24.txt').readline().strip()
+
+# CSV из LibreOffice / Excel (разделитель ;, дробная часть через запятую)
+rows = [line.strip().split(';') for line in open('9.csv', encoding='utf-8')]
+nums = [[int(x) for x in r] for r in rows]
+</script>
+  <h2>Встроенные инструменты</h2>
+  <div class="tbl"><table>
+    <tr><th>Задача</th><th>Код</th></tr>
+    <tr><td>Число в двоичную строку</td><td><code>bin(n)[2:]</code>, <code>oct(n)[2:]</code>, <code>hex(n)[2:]</code></td></tr>
+    <tr><td>Строку в число по основанию</td><td><code>int('1A7', 16)</code>, основание 2…36</td></tr>
+    <tr><td>Все наборы 0/1</td><td><code>itertools.product([0, 1], repeat=4)</code></td></tr>
+    <tr><td>Все перестановки</td><td><code>itertools.permutations('xyzw')</code></td></tr>
+    <tr><td>Подсчёт частот</td><td><code>collections.Counter(s)</code></td></tr>
+    <tr><td>Сортировка по ключу</td><td><code>sorted(a, key=lambda p: (p[1], -p[0]))</code></td></tr>
+    <tr><td>Кэш для рекурсии</td><td><code>@functools.lru_cache(None)</code></td></tr>
+    <tr><td>Логарифм, округление вверх</td><td><code>math.log2(x)</code>, <code>math.ceil(x)</code></td></tr>
+    <tr><td>Расстояние между точками</td><td><code>math.dist(p, q)</code></td></tr>
+    <tr><td>Проверка по маске</td><td><code>fnmatch.fnmatch('12345', '1?3*')</code></td></tr>
+  </table></div>
+  <h2>Частые ловушки</h2>
+  <ul>
+    <li><code>-17 % 10</code> в Python равно <code>3</code>, а не 7. Последняя цифра числа: <code>abs(x) % 10</code>.</li>
+    <li><code>/</code> всегда даёт дробь. Целочисленное деление: <code>//</code>.</li>
+    <li><code>round(2.5)</code> равно 2 (банковское округление). Для «целой части» используйте <code>int()</code> или <code>//</code>.</li>
+    <li>Глубокая рекурсия: <code>sys.setrecursionlimit(10**6)</code>.</li>
+    <li>Импликация: <code>a &lt;= b</code>; эквивалентность: <code>a == b</code>; исключающее ИЛИ: <code>a != b</code>.</li>
+  </ul>
+</section>
+
+<!-- ======================= 1 ======================= -->
+<section class="page" id="t1" data-title="Анализ информационных моделей" data-kw="граф таблица схема дорог степень вершины весовая матрица">
+  <div class="kicker">Задание 1</div>
+  <h1>Анализ информационных моделей</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">вручную</span><span class="badge">~3 минуты</span></div>
+  <p>Даны схема дорог (граф) и таблица расстояний, где номера пунктов не совпадают с буквами на схеме. Нужно сопоставить вершины и найти длину дороги или пути.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Граф</b>: вершины (пункты) и рёбра (дороги). Если рёбра без направления, таблица симметрична относительно главной диагонали.</li>
+    <li><b>Степень вершины</b>: число рёбер, выходящих из неё. В таблице это количество заполненных клеток в строке.</li>
+    <li><b>Весовая матрица</b>: на пересечении строки i и столбца j стоит длина дороги между пунктами i и j.</li>
+    <li>Сумма степеней всех вершин равна удвоенному числу рёбер.</li>
+  </ul>
+  <h2>Как решать</h2>
+  <ol>
+    <li>Выпишите степени всех вершин на схеме и всех строк таблицы.</li>
+    <li>Найдите вершины с уникальной степенью: их соответствие однозначно.</li>
+    <li>Остальные определяйте по соседям: «вершина степени 3, соседняя с уникальной вершиной степени 4».</li>
+    <li>Когда нужные буквы сопоставлены с номерами, прочитайте вес на их пересечении в таблице.</li>
+  </ol>
+  <div class="tip"><p>Если в вопросе спрашивают сумму длин двух дорог, сначала убедитесь, что вершины определены однозначно. Иногда две вершины симметричны, но ответ от выбора не зависит.</p></div>
+  <h2>Ловушки</h2>
+  <ul><li>Номер строки таблицы и буква на схеме не связаны. Совпадение «П1 = А» случайно.</li><li>Не путайте «длину дороги» с «кратчайшим путём», если между пунктами нет прямой дороги.</li></ul>
+</section>
+
+<!-- ======================= 2 ======================= -->
+<section class="page" id="t2" data-title="Таблицы истинности" data-kw="логика логические функции таблица истинности импликация эквивалентность перебор">
+  <div class="kicker">Задание 2</div>
+  <h1>Логические функции и таблицы истинности</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python или вручную</span></div>
+  <p>Дана логическая функция F и фрагмент её таблицы истинности с пропусками. Нужно определить, какому столбцу соответствует каждая переменная.</p>
+  <h2>Логические операции</h2>
+  <div class="tbl"><table>
+    <tr><th>Операция</th><th>Знак</th><th>Истинна, когда</th><th>Python</th></tr>
+    <tr><td>Отрицание</td><td>¬A</td><td>A ложно</td><td><code>not a</code></td></tr>
+    <tr><td>Конъюнкция (И)</td><td>A ∧ B</td><td>оба истинны</td><td><code>a and b</code></td></tr>
+    <tr><td>Дизъюнкция (ИЛИ)</td><td>A ∨ B</td><td>хотя бы одно истинно</td><td><code>a or b</code></td></tr>
+    <tr><td>Импликация</td><td>A → B</td><td>везде, кроме 1 → 0</td><td><code>a &lt;= b</code></td></tr>
+    <tr><td>Эквивалентность</td><td>A ≡ B</td><td>значения равны</td><td><code>a == b</code></td></tr>
+    <tr><td>Исключающее ИЛИ</td><td>A ⊕ B</td><td>значения различны</td><td><code>a != b</code></td></tr>
+  </table></div>
+  <p><b>Приоритет</b>: ¬, затем ∧, затем ∨, затем →, затем ≡. В Python операции сравнения (<code>&lt;=</code>, <code>==</code>) выполняются раньше <code>and</code>/<code>or</code>, поэтому всегда ставьте скобки.</p>
+  <h3>Полезные законы</h3>
+  <div class="f">A → B = ¬A ∨ B
+¬(A ∧ B) = ¬A ∨ ¬B        ¬(A ∨ B) = ¬A ∧ ¬B   (де Морган)
+A ≡ B = (A ∧ B) ∨ (¬A ∧ ¬B)
+A ∨ A ∧ B = A             (поглощение)</div>
+  <h2>Как решать программой</h2>
+  <p>Перебираем значения пропущенных клеток и все перестановки переменных по столбцам. Выводим перестановку, при которой каждая строка фрагмента даёт указанное значение F.</p>
+<script type="text/x-py">
+from itertools import product, permutations
+
+def F(x, y, z, w):
+    return (x and not y) or (y == z) or w      # (x ∧ ¬y) ∨ (y ≡ z) ∨ w
+
+# пропуски заменяем переменными a[0], a[1], ...; второй элемент — значение F
+for a in product([0, 1], repeat=5):
+    table = [
+        ((0, a[0], a[1], 1), 0),
+        ((1, 1, a[2], a[3]), 0),
+        ((1, 0, a[4], 0), 0),
+    ]
+    rows = [r for r, _ in table]
+    if len(set(rows)) < len(rows):      # строки таблицы должны различаться
+        continue
+    for p in permutations('xyzw'):
+        if all(F(**dict(zip(p, r))) == v for r, v in table):
+            print(''.join(p))
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Забыть условие «строки фрагмента различны».</li><li>Перепутать порядок: ответ записывается по столбцам слева направо.</li><li>Если программа печатает несколько одинаковых ответов, это нормально; разных быть не должно.</li></ul>
+</section>
+
+<!-- ======================= 3 ======================= -->
+<section class="page" id="t3" data-title="Базы данных" data-kw="реляционная база данных таблицы ключ впр vlookup суммеслимн фильтр libreoffice">
+  <div class="kicker">Задание 3</div>
+  <h1>Реляционные базы данных</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">электронные таблицы</span></div>
+  <p>Дан файл с несколькими связанными таблицами (например, «Движение товаров», «Товар», «Магазин»). Нужно посчитать, сколько товара определённого вида поступило или продано в магазинах района за период.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Реляционная БД</b>: набор таблиц; строка — запись, столбец — поле.</li>
+    <li><b>Первичный ключ</b>: поле, однозначно определяющее запись (ID товара, ID магазина).</li>
+    <li><b>Внешний ключ</b>: поле, ссылающееся на первичный ключ другой таблицы. Так таблица операций знает, какой товар и в каком магазине.</li>
+    <li>Связь «один ко многим»: один магазин встречается во многих операциях.</li>
+  </ul>
+  <h2>Как решать</h2>
+  <ol>
+    <li>Прочитайте условие и выпишите фильтры: вид товара, район, тип операции, период дат.</li>
+    <li>В главную таблицу операций добавьте вспомогательные столбцы и подтяните атрибуты из справочников функцией <code>ВПР</code>:
+      <div class="f">=ВПР(C2; Товар.$A$2:$F$100; 3; 0)</div>
+      (в LibreOffice Calc имя листа отделяется точкой, в Excel восклицательным знаком; последний аргумент 0 означает точное совпадение).</li>
+    <li>Поставьте автофильтр по нужным условиям или сразу посчитайте:
+      <div class="f">=СУММЕСЛИМН(E:E; D:D; "Поступление"; H:H; "Заречный"; I:I; "Сахар")</div></li>
+    <li>Если спрашивают массу или стоимость, умножьте количество упаковок на вес упаковки или цену в отдельном столбце.</li>
+  </ol>
+  <h2>Ловушки</h2>
+  <ul><li>Поступление и продажа: проверьте, какой тип операции нужен.</li><li>Единицы измерения: упаковки, килограммы, граммы.</li><li>Даты могут быть записаны текстом. Фильтруйте по диапазону, а не по одному дню.</li><li>Изменение остатка = поступление − продажа.</li></ul>
+</section>
+
+<!-- ======================= 4 ======================= -->
+<section class="page" id="t4" data-title="Кодирование и условие Фано" data-kw="кодирование декодирование условие фано префиксный код дерево хаффман равномерный код">
+  <div class="kicker">Задание 4</div>
+  <h1>Кодирование и декодирование информации</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">вручную</span></div>
+  <p>Есть неравномерный двоичный код для букв, часть кодовых слов известна. Нужно найти кратчайшее возможное кодовое слово для буквы или минимальную суммарную длину.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Равномерный код</b>: все кодовые слова одной длины. Для N символов нужна длина <code>i = ⌈log₂N⌉</code>.</li>
+    <li><b>Условие Фано</b> (прямое): ни одно кодовое слово не является началом другого. Тогда сообщение декодируется однозначно.</li>
+    <li><b>Обратное условие Фано</b>: ни одно слово не является окончанием другого. Тоже гарантирует однозначность.</li>
+    <li>Код, удовлетворяющий Фано, удобно изображать <b>двоичным деревом</b>: ветвь влево — 0, вправо — 1, кодовые слова — только листья.</li>
+    <li><b>Неравенство Крафта</b>: для префиксного кода с длинами l₁…lₙ выполняется Σ 2<sup>−lᵢ</sup> ≤ 1. Быстрая проверка, возможно ли такое множество длин.</li>
+  </ul>
+  <h2>Как решать</h2>
+  <ol>
+    <li>Постройте дерево по известным кодовым словам.</li>
+    <li>Найдите «свободные» ветви: узлы, где нет ни слова, ни продолжения к слову.</li>
+    <li>Новой букве дайте самый короткий свободный путь. Если нужно разместить несколько букв, свободный узел можно расщепить на два более длинных.</li>
+    <li>Для минимальной суммарной длины сообщения частым буквам давайте короткие коды (идея алгоритма Хаффмана).</li>
+  </ol>
+<script type="text/x-py">
+# проверка условия Фано
+def fano(codes):
+    return not any(a != b and b.startswith(a) for a in codes for b in codes)
+
+print(fano(['00', '01', '100', '101', '11']))   # True
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Слово, которое «занимает» узел, нельзя продолжать: его потомки недоступны.</li><li>В вопросе «наименьшая длина» и «наименьшее численное значение» кода отвечают по-разному.</li></ul>
+</section>
+
+<!-- ======================= 5 ======================= -->
+<section class="page" id="t5" data-title="Анализ алгоритма-автомата" data-kw="автомат двоичная запись bin int перебор минимальное n алгоритм">
+  <div class="kicker">Задание 5</div>
+  <h1>Анализ алгоритмов для исполнителей</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <p>Автомат получает число N, строит его запись (обычно двоичную), дописывает или меняет цифры и выдаёт новое число R. Требуется найти наименьшее N, при котором R больше заданного, или наоборот.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li>Дописать цифру справа к двоичной записи = умножить на 2 и прибавить цифру.</li>
+    <li>Чётность числа = последняя двоичная цифра; сумма цифр по модулю 2 = чётность количества единиц.</li>
+    <li>Перевод: <code>bin(n)[2:]</code> и обратно <code>int(s, 2)</code>. Для других систем пишем свою функцию.</li>
+  </ul>
+  <h2>Шаблон</h2>
+<script type="text/x-py">
+def R(n):
+    s = bin(n)[2:]
+    if n % 3 == 0:
+        s = s + s[-3:]               # дописать три последние цифры
+    else:
+        s = s + bin(n % 3 * 3)[2:]   # дописать двоичную запись остатка * 3
+    return int(s, 2)
+
+print(min(n for n in range(1, 10000) if R(n) > 151))
+
+# перевод в произвольную систему (для автоматов с троичной записью и т. п.)
+def to_base(n, b):
+    s = ''
+    while n > 0:
+        s = '0123456789ABCDEF'[n % b] + s
+        n //= b
+    return s or '0'
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Берите диапазон перебора с запасом и проверьте, что ответ не на его границе.</li><li>«N — натуральное», значит начинать с 1.</li><li>Вопрос может быть про наибольшее R или про количество N: меняйте <code>min</code> на нужную функцию.</li></ul>
+</section>
+
+<!-- ======================= 6 ======================= -->
+<section class="page" id="t6" data-title="Исполнитель Черепаха" data-kw="черепаха turtle циклический алгоритм точки внутри фигуры формула пика">
+  <div class="kicker">Задание 6</div>
+  <h1>Определение результата циклического алгоритма (Черепаха)</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python turtle или формулы</span></div>
+  <p>Черепаха выполняет команды <i>Вперёд n</i>, <i>Назад n</i>, <i>Направо m</i>, <i>Налево m</i>, <i>Повтори k [...]</i>, иногда <i>Поднять хвост</i> / <i>Опустить хвост</i>. Нужно найти количество точек с целыми координатами внутри фигуры или в пересечении/объединении фигур.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li>Черепаха стартует из начала координат и смотрит вдоль оси Y (вверх).</li>
+    <li>Прямоугольник a × b: внутри (без границы) <code>(a − 1)(b − 1)</code> точек, вместе с границей <code>(a + 1)(b + 1)</code>.</li>
+    <li><b>Формула Пика</b> для многоугольника с вершинами в целых точках: <code>S = I + B/2 − 1</code>, где I — точки внутри, B — точки на границе.</li>
+    <li>Поднятый хвост: Черепаха перемещается, ничего не рисуя. Так строят две отдельные фигуры.</li>
+  </ul>
+  <h2>Шаблон на Python</h2>
+<script type="text/x-py">
+from turtle import *
+
+k = 20                 # масштаб: 1 единица = 20 пикселей
+tracer(0)              # рисовать мгновенно
+screensize(4000, 4000)
+left(90)               # повернуть Черепаху вверх, как в условии
+
+# Повтори 2 [Вперёд 9 Направо 90 Вперёд 15 Направо 90]
+for _ in range(2):
+    forward(9 * k); right(90)
+    forward(15 * k); right(90)
+
+# сетка целых точек
+up()
+for x in range(-20, 30):
+    for y in range(-20, 30):
+        goto(x * k, y * k)
+        dot(4, 'red')
+update()
+done()
+</script>
+  <p>Дальше считаем точки внутри фигуры на картинке. Если фигура прямоугольная, проще применить формулу.</p>
+  <h2>Ловушки</h2>
+  <ul><li>«Внутри области» обычно значит без точек на границе; «внутри и на границе» включает её.</li><li>Если углы не кратны 90°, считайте только программой.</li><li>Для пересечения двух фигур нарисуйте обе и считайте общую часть.</li></ul>
+</section>
+
+<!-- ======================= 7 ======================= -->
+<section class="page" id="t7" data-title="Кодирование графики и звука" data-kw="изображение звук объём файла пиксель глубина цвета частота дискретизации разрядность каналы скорость передачи">
+  <div class="kicker">Задание 7</div>
+  <h1>Кодирование растровых изображений и звука</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">вручную / калькулятор</span></div>
+  <h2>Изображения</h2>
+  <div class="f">I = K · i          K — число пикселей (ширина × высота)
+N = 2^i            N — число цветов, i — бит на пиксель (глубина цвета)
+i = ⌈log₂N⌉        если N не степень двойки</div>
+  <ul><li>RGB с 8 битами на канал: 24 бита на пиксель, 2²⁴ цветов.</li><li>Если изображения сжимают на k %, объём умножается на (1 − k/100).</li></ul>
+  <h2>Звук (ИКМ)</h2>
+  <div class="f">I = f · i · k · t   f — частота дискретизации (Гц), i — разрядность (бит),
+                    k — число каналов (моно 1, стерео 2), t — время (с)</div>
+  <h2>Передача данных</h2>
+  <div class="f">t = I / v           v — скорость в бит/с</div>
+  <h2>Единицы</h2>
+  <div class="tbl"><table>
+    <tr><th>Единица</th><th>Значение</th></tr>
+    <tr><td>1 байт</td><td class="n">8 бит = 2³ бит</td></tr>
+    <tr><td>1 Кбайт</td><td class="n">1024 байт = 2¹³ бит</td></tr>
+    <tr><td>1 Мбайт</td><td class="n">2²⁰ байт = 2²³ бит</td></tr>
+    <tr><td>1 Гбайт</td><td class="n">2³⁰ байт</td></tr>
+    <tr><td>1 Кбит/с (в сетях)</td><td class="n">обычно 1000 бит/с, читайте условие</td></tr>
+  </table></div>
+  <div class="tip"><p>Считайте в степенях двойки: 1024 × 768 = 2¹⁰ · 3 · 2⁸. Так проще сокращать дроби без калькулятора.</p></div>
+  <h2>Ловушки</h2>
+  <ul><li>Число цветов округляется вверх до степени двойки только через биты: 200 цветов → 8 бит.</li><li>Если ответ нужен «в Кбайтах, целым числом», округляйте вверх, когда речь о минимальном объёме памяти.</li><li>Стерео удваивает объём.</li></ul>
+</section>
+
+<!-- ======================= 8 ======================= -->
+<section class="page" id="t8" data-title="Комбинаторика" data-kw="комбинаторика слова перебор product permutations лексикографический порядок номер слова">
+  <div class="kicker">Задание 8</div>
+  <h1>Комбинаторика: перебор слов</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Правило произведения</b>: если первый выбор делается a способами, второй b способами, всего a · b вариантов.</li>
+    <li>Слова длины k из n букв с повторениями: <code>nᵏ</code>.</li>
+    <li>Перестановки n различных букв: <code>n!</code>. С повторяющимися буквами: <code>n! / (a! · b! · …)</code>.</li>
+    <li>Слова в алфавитном порядке из n букв длины k нумеруются как числа в n-ичной системе: буква ↔ цифра.</li>
+  </ul>
+  <h2>Шаблоны</h2>
+<script type="text/x-py">
+from itertools import product, permutations
+
+# сколько слов длины 5 из букв КОРТЕЖ, где буква Ж не больше одного раза
+# и нет двух гласных подряд
+cnt = 0
+for w in product('КОРТЕЖ', repeat=5):
+    s = ''.join(w)
+    if s.count('Ж') <= 1 and not any(a in 'ОЕ' and b in 'ОЕ' for a, b in zip(s, s[1:])):
+        cnt += 1
+print(cnt)
+
+# номер слова в алфавитном списке (нумерация с 1)
+for i, w in enumerate(product(sorted('ВЕКТОР'), repeat=4), 1):
+    if ''.join(w) == 'РОТЕ':
+        print(i)
+
+# перестановки букв слова без повторов одинаковых слов
+print(len(set(permutations('ПАРАБОЛА'))))
+</script>
+  <h2>Ловушки</h2>
+  <ul><li><code>product</code> перебирает в порядке исходной строки. Для алфавитного порядка передайте <code>sorted(...)</code>.</li><li>Нумерация в задачах обычно с 1.</li><li>«Не может начинаться с …» проверяется по <code>s[0]</code>.</li></ul>
+</section>
+
+<!-- ======================= 9 ======================= -->
+<section class="page" id="t9" data-title="Электронные таблицы" data-kw="электронные таблицы счётесли срзнач строки условие libreoffice calc excel">
+  <div class="kicker">Задание 9</div>
+  <h1>Обработка числовой информации в электронных таблицах</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">таблицы или Python</span></div>
+  <p>В каждой строке файла несколько чисел. Нужно посчитать строки, удовлетворяющие набору условий: есть повторы, среднее неповторяющихся меньше суммы повторяющихся и т. п.</p>
+  <h2>Функции таблиц</h2>
+  <div class="tbl"><table>
+    <tr><th>Функция</th><th>Что делает</th></tr>
+    <tr><td><code>СЧЁТЕСЛИ(A1:G1; A1)</code></td><td>сколько раз A1 встречается в строке</td></tr>
+    <tr><td><code>СУММ</code>, <code>СРЗНАЧ</code>, <code>МАКС</code>, <code>МИН</code></td><td>сумма, среднее, максимум, минимум</td></tr>
+    <tr><td><code>НАИБОЛЬШИЙ(A1:G1; 2)</code></td><td>второе по величине число</td></tr>
+    <tr><td><code>И(...)</code>, <code>ИЛИ(...)</code>, <code>ЕСЛИ(усл; 1; 0)</code></td><td>логика</td></tr>
+  </table></div>
+  <h2>Решение на Python</h2>
+<script type="text/x-py">
+cnt = 0
+for line in open('9.csv'):
+    a = [int(x) for x in line.replace(';', ' ').split()]
+    rep = [x for x in a if a.count(x) == 2]     # числа, встречающиеся ровно дважды
+    uni = [x for x in a if a.count(x) == 1]     # числа без повторов
+    # пример условия: ровно одна пара повторов, остальные различны,
+    # и среднее неповторяющихся не больше суммы повторяющихся
+    if len(rep) == 2 and len(uni) == len(a) - 2:
+        if sum(uni) / len(uni) <= sum(rep):
+            cnt += 1
+print(cnt)
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>«Повторяются дважды» и «встречаются не менее двух раз» — разные условия.</li><li>Ответ может требовать номер строки: используйте <code>enumerate(..., 1)</code>.</li><li>Файл LibreOffice <code>.ods</code> сохраните как CSV, если решаете на Python.</li></ul>
+</section>
+
+<!-- ======================= 10 ======================= -->
+<section class="page" id="t10" data-title="Маска подсети" data-kw="ip адрес маска подсети сеть узел ipaddress октет 2027" data-new="1">
+  <div class="kicker">Задание 10 · новая тема в 2027</div>
+  <h1>IP-адресация и маска подсети</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python ipaddress</span><span class="badge w">раньше было заданием 13</span></div>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>IPv4-адрес</b>: 32 бита, записывается как 4 числа от 0 до 255 (октеты), например 192.168.32.161.</li>
+    <li><b>Маска</b>: 32 бита, сначала подряд единицы, затем нули. Единицы отмечают часть адреса сети, нули — номер узла. Запись <code>/26</code> значит 26 единиц.</li>
+    <li><b>Адрес сети</b> = IP-адрес AND маска (поразрядная конъюнкция).</li>
+    <li>В сети с маской /k всего <code>2^(32 − k)</code> адресов. Узлам можно назначить <code>2^(32 − k) − 2</code>: адрес сети (все нули в узловой части) и широковещательный (все единицы) не используются.</li>
+    <li>Допустимые значения октета маски: 0, 128, 192, 224, 240, 248, 252, 254, 255.</li>
+  </ul>
+  <h2>Ручной приём</h2>
+  <p>Адрес сети по IP 192.168.32.161 и маске 255.255.255.224: первые три октета маски — 255, они переписываются. Последний: 161 AND 224 = 10100001 AND 11100000 = 10100000 = 160. Ответ: 192.168.32.160.</p>
+  <h2>Шаблоны</h2>
+<script type="text/x-py">
+from ipaddress import ip_network, ip_address
+
+# 1) сколько адресов сети, у которых в двоичной записи чётное число единиц
+net = ip_network('192.168.32.160/255.255.255.224', strict=False)
+cnt = sum(1 for ip in net if bin(int(ip)).count('1') % 2 == 0)
+print(net.network_address, net.num_addresses, cnt)
+
+# 2) по IP и адресу сети найти возможные маски
+ip, net_addr = '112.160.192.10', '112.160.128.0'
+for k in range(33):
+    n = ip_network(f'{ip}/{k}', strict=False)
+    if str(n.network_address) == net_addr:
+        print(k, n.netmask)   # наименьшее/наибольшее число единиц — по вопросу
+
+# 3) третий слева байт маски
+print(str(ip_network('0.0.0.0/19').netmask).split('.')[2])
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Без <code>strict=False</code> Python выдаст ошибку, если адрес не является адресом сети.</li><li>«Количество адресов» и «количество узлов» отличаются на 2.</li><li>Если спрашивают байт маски, ответ — десятичное число, а не двоичная запись.</li></ul>
+</section>
+
+<!-- ======================= 11 ======================= -->
+<section class="page" id="t11" data-title="Количество информации" data-kw="количество информации пароль идентификатор бит байт log2 алфавит формула хартли">
+  <div class="kicker">Задание 11</div>
+  <h1>Вычисление количества информации</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">формулы</span></div>
+  <p>Пароли, идентификаторы или номера кодируются посимвольно минимально возможным одинаковым числом бит, каждая запись — целым числом байт. Найти объём памяти или размер алфавита.</p>
+  <h2>Формулы</h2>
+  <div class="f">i = ⌈log₂N⌉                бит на символ (N — мощность алфавита)
+I_записи = ⌈L · i / 8⌉     байт на одну запись длины L
+I_всего = K · I_записи      K — число записей</div>
+  <p>Если дополнительно хранятся сведения (например, 12 байт на пользователя), прибавляйте их к записи.</p>
+<script type="text/x-py">
+from math import ceil, log2
+
+N = 26 + 10          # латинские заглавные + цифры
+L = 15               # длина идентификатора
+K = 50               # число пользователей
+i = ceil(log2(N))
+per_id = ceil(L * i / 8)
+print(per_id * K)
+
+# обратная задача: наибольший алфавит, при котором 40 записей длины 10 занимают не больше 300 байт
+for N in range(2, 10000):
+    if 40 * ceil(10 * ceil(log2(N)) / 8) > 300:
+        print(N - 1)
+        break
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Округление вверх делается дважды: до целых бит на символ и до целых байт на запись.</li><li>Не округляйте общий объём: каждая запись округляется отдельно.</li><li>Различаются ли строчные и заглавные буквы? Это меняет N.</li></ul>
+</section>
+
+<!-- ======================= 12 ======================= -->
+<section class="page" id="t12" data-title="Исполнитель Редактор" data-kw="редактор заменить нашлось строка while replace">
+  <div class="kicker">Задание 12</div>
+  <h1>Выполнение алгоритмов для исполнителя Редактор</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <h2>Теория</h2>
+  <ul>
+    <li><code>заменить(v, w)</code> заменяет <b>первое слева</b> вхождение v на w. В Python: <code>s = s.replace(v, w, 1)</code>.</li>
+    <li><code>нашлось(v)</code> проверяет, есть ли v в строке: <code>v in s</code>.</li>
+    <li>Конструкция <code>ПОКА … ЕСЛИ … ИНАЧЕ ЕСЛИ …</code> переводится в <code>while</code> с <code>if / elif</code>.</li>
+  </ul>
+  <h2>Шаблон</h2>
+<script type="text/x-py">
+s = '>' + '1' * 10 + '2' * 20 + '3' * 30
+
+while '>1' in s or '>2' in s or '>3' in s:
+    if '>1' in s:
+        s = s.replace('>1', '22>', 1)
+    elif '>2' in s:
+        s = s.replace('>2', '2>', 1)
+    elif '>3' in s:
+        s = s.replace('>3', '1>', 1)
+
+print(sum(int(c) for c in s if c.isdigit()))
+
+# если надо найти n, при котором результат удовлетворяет условию, — оберните в цикл по n
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Без третьего аргумента <code>replace</code> заменит все вхождения. Это частая ошибка.</li><li>Порядок проверок в <code>if / elif</code> должен совпадать с условием.</li><li>Если цикл не завершается, проверьте, что строка действительно сокращается.</li></ul>
+</section>
+
+<!-- ======================= 13 ======================= -->
+<section class="page" id="t13" data-title="Анализ хода исполнения алгоритма" data-kw="исполнитель количество программ динамическое программирование рекурсия траектория обязательная точка 2027" data-new="1">
+  <div class="kicker">Задание 13 · новая тема в 2027</div>
+  <h1>Анализ хода исполнения алгоритма</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python или таблица</span><span class="badge w">тема бывшего задания 23</span></div>
+  <p>Исполнитель преобразует число командами (например, «Прибавить 1», «Умножить на 2»). Нужно найти количество программ, переводящих A в B, траектория которых проходит через одни числа и не содержит другие.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Траектория</b>: последовательность чисел, которые получаются при выполнении программы.</li>
+    <li>Число программ из A в B: <code>K(B) = K(предшественник₁) + K(предшественник₂) + …</code>, где K(A) = 1. Это динамическое программирование.</li>
+    <li>«Траектория содержит C» — перемножаем: <code>K(A→C) · K(C→B)</code>.</li>
+    <li>«Траектория не содержит D» — считаем K(D) = 0.</li>
+  </ul>
+  <h2>Шаблоны</h2>
+<script type="text/x-py">
+from functools import lru_cache
+
+@lru_cache(None)
+def f(x, y):
+    if x > y or x == 15:      # 15 — запрещённое число
+        return 0
+    if x == y:
+        return 1
+    return f(x + 1, y) + f(x * 2, y)
+
+print(f(3, 12) * f(12, 30))   # через 12, не через 15
+
+# динамика «вперёд» (если команды могут уменьшать число, работает только этот подход с ограничением)
+A, B = 3, 30
+k = [0] * (B + 1)
+k[A] = 1
+for x in range(A, B):
+    for y in (x + 1, x * 2):
+        if y <= B:
+            k[y] += k[x]
+print(k[B])
+
+# сколько различных результатов дают программы ровно из n команд
+res = {1}
+for _ in range(10):
+    res = {y for x in res for y in (x + 1, x * 2)}
+print(len(res))
+</script>
+  <div class="note"><p>Формат задания 13 в 2027 году новый. Тренируйтесь на задачах бывшего задания 23 (2020–2026): тема «анализ хода исполнения алгоритма» перенесена оттуда без изменения сути.</p></div>
+  <h2>Ловушки</h2>
+  <ul><li>Обязательную точку проверьте в обе стороны: программы до неё и после.</li><li>Команда «вычесть» может давать бесконечные циклы. Ограничьте глубину или число шагов.</li><li>Различайте «содержит число» и «проходит через число раньше другого».</li></ul>
+</section>
+
+<!-- ======================= 14 ======================= -->
+<section class="page" id="t14" data-title="Системы счисления" data-kw="системы счисления перевод основание int to_base выражение разряды цифра x">
+  <div class="kicker">Задание 14</div>
+  <h1>Позиционные системы счисления</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <h2>Теория</h2>
+  <ul>
+    <li>Развёрнутая форма: <code>a₂a₁a₀ (по осн. b) = a₂·b² + a₁·b + a₀</code>.</li>
+    <li>Перевод из десятичной: делим на b, собираем остатки снизу вверх.</li>
+    <li>Число <code>bⁿ</code> в системе с основанием b — единица и n нулей.</li>
+    <li><code>2ⁿ − 2ᵐ</code> (n &gt; m) в двоичной: (n − m) единиц, затем m нулей.</li>
+    <li>Последняя цифра в системе b — остаток <code>x % b</code>; число нулей в конце — сколько раз x делится на b.</li>
+  </ul>
+  <h2>Шаблоны</h2>
+<script type="text/x-py">
+def to_base(n, b):
+    d = []
+    while n > 0:
+        d.append(n % b)
+        n //= b
+    return d[::-1] or [0]
+
+# 1) сколько единиц / цифр 7 в записи выражения
+x = 4**2025 + 2**2017 - 15
+print(bin(x).count('1'))
+print(to_base(7**350 + 7**150 - 49, 7).count(6))
+
+# 2) неизвестная цифра x в записи числа (основание 19; x может быть 0..18)
+alph = '0123456789ABCDEFGHI'
+for x in range(19):
+    v = int('98' + alph[x] + '79', 19) + int('66' + alph[x] + '63', 19)
+    if v % 18 == 0:
+        print(x, v // 18)
+        break
+</script>
+  <h2>Ловушки</h2>
+  <ul><li><code>int(s, b)</code> работает только при b ≤ 36. Для больших оснований считайте вручную по развёрнутой форме.</li><li>Цифра в записи не может быть ≥ основания: учитывайте это при переборе x.</li><li>Различайте «сумма цифр» и «количество значащих цифр».</li></ul>
+</section>
+
+<!-- ======================= 15 ======================= -->
+<section class="page" id="t15" data-title="Логические выражения с параметром" data-kw="логика отрезки дел делимость поразрядная конъюнкция множество a параметр тождественно истинно">
+  <div class="kicker">Задание 15</div>
+  <h1>Логические выражения с параметром</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <p>Нужно найти наименьшее/наибольшее A (или длину отрезка A), при котором выражение тождественно истинно для всех x.</p>
+  <h2>Типы</h2>
+  <ul>
+    <li><b>ДЕЛ(n, m)</b>: n делится на m без остатка → <code>n % m == 0</code>.</li>
+    <li><b>Поразрядная конъюнкция</b> <code>x &amp; A</code>: в Python так же.</li>
+    <li><b>Отрезки</b> на числовой прямой: <code>x ∈ P</code> → <code>P[0] &lt;= x &lt;= P[1]</code>.</li>
+    <li><b>Неравенства</b> с x и y: перебираем обе переменные.</li>
+  </ul>
+  <h2>Шаблоны</h2>
+<script type="text/x-py">
+# 1) ДЕЛ: наибольшее натуральное A для ДЕЛ(x, A) ∨ (ДЕЛ(x, 6) → ¬ДЕЛ(x, 9))
+def F(x, A):
+    return (x % A == 0) or ((x % 6 == 0) <= (x % 9 != 0))
+
+for A in range(1000, 0, -1):          # для наименьшего A — перебор от 1 вверх
+    if all(F(x, A) for x in range(1, 10000)):
+        print(A); break
+
+# 2) поразрядная конъюнкция: наименьшее неотрицательное A
+for A in range(0, 1024):
+    if all(((x & 28 != 0) or (x & 45 != 0)) <= ((x & 17 == 0) <= (x & A != 0))
+           for x in range(1024)):
+        print(A); break
+
+# 3) отрезки: наименьшая длина A для (x∈P) → (((x∈Q) ∧ ¬(x∈A)) → ¬(x∈P))
+P, Q = (10, 29), (13, 18)
+def inn(x, s): return s[0] <= x <= s[1]
+ends = sorted({10, 29, 13, 18})
+xs = [i / 4 for i in range(0, 50 * 4)]           # сетка с шагом 0.25
+best = None
+for a in ends:
+    for b in ends:
+        if a <= b and all(inn(x, P) <= ((inn(x, Q) and not inn(x, (a, b))) <= (not inn(x, P)))
+                          for x in xs):
+            if best is None or b - a < best:
+                best = b - a
+print(best)
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Сравнения в Python связываются цепочкой: <code>a &lt;= b == c</code> работает не как логика. Ставьте скобки.</li><li>В задачах на отрезки концы A берите из концов P и Q, а x проверяйте с дробным шагом.</li><li>Диапазон x должен быть с запасом: при малом диапазоне получите неверное A.</li></ul>
+</section>
+
+<!-- ======================= 16 ======================= -->
+<section class="page" id="t16" data-title="Рекурсивные алгоритмы" data-kw="рекурсия рекурсивная функция lru_cache setrecursionlimit factorial">
+  <div class="kicker">Задание 16</div>
+  <h1>Рекурсивные алгоритмы</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <h2>Теория</h2>
+  <ul>
+    <li>Рекурсия: функция вызывает сама себя. Нужны <b>базовый случай</b> и шаг, приближающий к нему.</li>
+    <li>Без кэширования число вызовов растёт экспоненциально. <code>@lru_cache</code> запоминает результаты.</li>
+    <li>Глубина стека Python по умолчанию ~1000. Для больших n поднимите лимит или вычисляйте значения снизу вверх.</li>
+    <li>Если надо вычислить <code>F(2024) / F(2022)</code> с огромными числами, упростите выражение алгебраически или используйте целочисленную арифметику Python (она точная).</li>
+  </ul>
+<script type="text/x-py">
+import sys
+from functools import lru_cache
+sys.setrecursionlimit(10**6)
+
+@lru_cache(None)
+def F(n):
+    if n == 1:
+        return 1
+    return n * F(n - 1)        # F(n) = n!
+
+for i in range(1, 2025):       # «прогрев» кэша снизу вверх, чтобы не переполнить стек
+    F(i)
+print((F(2024) + 2 * F(2023)) // F(2022))
+
+# итеративный вариант без рекурсии
+f = {1: 1}
+for n in range(2, 2025):
+    f[n] = n * f[n - 1]
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Используйте <code>//</code> для деления больших чисел: <code>/</code> переведёт их в float и потеряет точность или вызовет переполнение.</li><li>Если функции две и вызывают друг друга (F и G), кэшируйте обе.</li><li>Задача «сколько раз будет напечатана звёздочка» решается глобальным счётчиком внутри функции без кэша.</li></ul>
+</section>
+
+<!-- ======================= 17 ======================= -->
+<section class="page" id="t17" data-title="Обработка последовательности" data-kw="последовательность пары тройки файл минимум максимум сумма zip">
+  <div class="kicker">Задание 17</div>
+  <h1>Обработка числовой последовательности</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <p>Из файла читается последовательность целых чисел. Пара — два соседних элемента. Нужно найти количество пар с условием и, например, максимальную сумму в таких парах.</p>
+<script type="text/x-py">
+a = [int(x) for x in open('17.txt')]
+
+def ends13(x):
+    return abs(x) % 100 == 13          # запись числа оканчивается на 13
+
+m = min(x for x in a if ends13(x))     # минимальный элемент с таким окончанием
+
+cnt, best = 0, -10**18
+for x, y in zip(a, a[1:]):             # для троек: zip(a, a[1:], a[2:])
+    if ends13(x) + ends13(y) == 1 and x * x + y * y >= m * m:
+        cnt += 1
+        best = max(best, x * x + y * y)
+print(cnt, best)
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Отрицательные числа: последнюю цифру берите от <code>abs(x)</code>.</li><li>«Ровно один из двух» — это <code>ends13(x) != ends13(y)</code>, не <code>or</code>.</li><li>«Двузначное» — <code>9 &lt; abs(x) &lt; 100</code>.</li><li>Максимум по файлу считается по всем элементам, а не только по парам.</li></ul>
+</section>
+
+<!-- ======================= 18 ======================= -->
+<section class="page" id="t18" data-title="Робот-сборщик монет" data-kw="динамическое программирование робот клетки максимальная сумма минимальная сумма стены таблица">
+  <div class="kicker">Задание 18</div>
+  <h1>Динамическое программирование в таблице (Робот)</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">электронные таблицы</span></div>
+  <p>Робот идёт из левой верхней клетки в правую нижнюю, двигаясь только вправо или вниз, и собирает монеты. Найти максимальную и минимальную сумму. Внутри поля могут быть стены.</p>
+  <h2>Идея</h2>
+  <div class="f">S[i][j] = a[i][j] + max(S[i−1][j], S[i][j−1])</div>
+  <p>Каждая клетка хранит лучшую сумму пути до неё. Первую строку и первый столбец считаем отдельно: туда можно прийти только с одной стороны.</p>
+  <h2>В таблицах</h2>
+  <ol>
+    <li>Скопируйте поле на свободное место (например, начиная с L1).</li>
+    <li>В L1 запишите <code>=A1</code>; в M1 <code>=L1+B1</code> (только слева); в L2 <code>=L1+A2</code> (только сверху).</li>
+    <li>В M2 <code>=МАКС(L2;M1)+B2</code> и протяните на всё поле.</li>
+    <li>У клеток рядом со стеной вручную уберите недоступное направление.</li>
+    <li>Для минимума замените <code>МАКС</code> на <code>МИН</code>.</li>
+  </ol>
+<script type="text/x-py">
+# то же на Python (поле без стен, файл CSV)
+a = [[int(x) for x in line.strip().split(';')] for line in open('18.csv')]
+n, m = len(a), len(a[0])
+S = [[0] * m for _ in range(n)]
+for i in range(n):
+    for j in range(m):
+        prev = []
+        if i > 0: prev.append(S[i - 1][j])
+        if j > 0: prev.append(S[i][j - 1])
+        S[i][j] = a[i][j] + (max(prev) if prev else 0)
+print(S[-1][-1])
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Стены легко пропустить: увеличьте масштаб и проверьте жирные линии.</li><li>Ответ — два числа через пробел: обычно сначала максимум, затем минимум. Читайте условие.</li><li>Иногда разрешены другие ходы (вправо и вверх), меняйте направление заполнения.</li></ul>
+</section>
+
+<!-- ======================= 19-21 ======================= -->
+<section class="page" id="t19" data-title="Теория игр" data-kw="теория игр камни куча выигрышная стратегия петя ваня позиция 20 21">
+  <div class="kicker">Задания 19, 20, 21</div>
+  <h1>Теория игр: выигрышные стратегии</h1>
+  <div class="badges"><span class="badge">3 балла (по 1)</span><span class="badge">Python</span></div>
+  <p>Два игрока (Петя ходит первым, затем Ваня) по очереди меняют кучу камней: добавляют камень или увеличивают кучу вдвое. Побеждает тот, кто первым доведёт количество до заданного порога.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Позиция</b>: состояние игры (число камней или пара куч).</li>
+    <li><b>Выигрышная</b> позиция: игрок, который ходит из неё, может победить при любой игре соперника. Из неё есть ход в проигрышную позицию.</li>
+    <li><b>Проигрышная</b> позиция: все ходы ведут в выигрышные для соперника позиции.</li>
+    <li>Обозначения: П1 — Петя выигрывает первым ходом; В1 — Ваня выигрывает первым ходом при любом ходе Пети; П2 — Петя выигрывает вторым ходом; В2 — Ваня выигрывает первым или вторым ходом.</li>
+  </ul>
+  <h2>Универсальный шаблон</h2>
+<script type="text/x-py">
+from functools import lru_cache
+
+WIN = 129                       # игра заканчивается, когда камней >= 129
+
+def moves(h):
+    return (h + 1, h * 2)       # для двух куч: позиция (a, b) и ходы по каждой куче
+
+@lru_cache(None)
+def f(h, m):
+    # True, если игра закончится не позже чем за m ходов победой «нужного» игрока
+    if h >= WIN:
+        return m % 2 == 0
+    if m == 0:
+        return False
+    r = [f(x, m - 1) for x in moves(h)]
+    return any(r) if m % 2 == 1 else all(r)
+
+S = range(1, WIN)
+# 19: Ваня выигрывает первым ходом после любого хода Пети
+print([s for s in S if f(s, 2)])
+# 19 (вариант «после неудачного хода Пети»): Петя не выигрывает сразу, но есть ход, после которого Ваня выигрывает
+print([s for s in S if not f(s, 1) and any(f(x, 1) for x in moves(s))])
+# 20: Петя выигрывает вторым ходом, но не первым
+print([s for s in S if f(s, 3) and not f(s, 1)])
+# 21: Ваня выигрывает первым или вторым ходом, но не гарантированно первым
+print([s for s in S if f(s, 4) and not f(s, 2)])
+</script>
+  <div class="tip"><p>m — сколько ходов осталось. При нечётном m ходит тот, кто должен победить (ему нужен хотя бы один хороший ход, <code>any</code>), при чётном ходит соперник (все его ходы должны вести к поражению, <code>all</code>).</p></div>
+  <h2>Ловушки</h2>
+  <ul><li>«Игра завершается, когда сумма ≥ N» и «когда камней ≤ N» требуют разных условий остановки.</li><li>Для двух куч функция принимает два числа: <code>f(a, b, m)</code>, ходы меняют одну из куч.</li><li>В задании 19 ответ часто одно число (минимальное S), в 20 — два числа по возрастанию.</li></ul>
+</section>
+
+<!-- ======================= 22 ======================= -->
+<section class="page" id="t22" data-title="Параллельные процессы" data-kw="процессы параллельные зависимости время выполнения критический путь многопроцессорная">
+  <div class="kicker">Задание 22</div>
+  <h1>Многопроцессорные системы и параллельные процессы</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">таблица или Python</span></div>
+  <p>Дана таблица процессов: ID, время выполнения и список ID процессов, от которых он зависит. Процессы выполняются параллельно, процесс стартует сразу после завершения всех, от которых зависит. Найти минимальное время завершения всех процессов или число процессов в момент T.</p>
+  <h2>Теория</h2>
+  <div class="f">finish(i) = t(i) + max(finish(j) для всех j, от которых зависит i)   (0, если зависимостей нет)
+Общее время = max(finish(i))   — длина критического пути</div>
+<script type="text/x-py">
+from functools import lru_cache
+
+t, deps = {}, {}
+for line in open('22.csv', encoding='utf-8'):
+    p = line.strip().split(';')
+    if not p[0].isdigit():
+        continue                              # пропустить заголовок
+    i = int(p[0]); t[i] = int(p[1])
+    deps[i] = [int(x) for x in p[2].split()] if len(p) > 2 and p[2].strip() not in ('', '0') else []
+
+@lru_cache(None)
+def fin(i):
+    return t[i] + max((fin(j) for j in deps[i]), default=0)
+
+print(max(fin(i) for i in t))
+
+# сколько процессов выполнялось в момент T (старт = fin - t)
+T = 10
+print(sum(1 for i in t if fin(i) - t[i] <= T < fin(i)))
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Зависимости могут быть записаны через «;» внутри ячейки. Посмотрите формат файла.</li><li>Если число процессоров ограничено, жадный подсчёт не работает: моделируйте по времени.</li><li>Граница момента T: процесс, закончившийся ровно в T, обычно уже не выполняется.</li></ul>
+</section>
+
+<!-- ======================= 23 ======================= -->
+<section class="page" id="t23" data-title="Алгоритмы на графах" data-kw="графы bfs dfs поиск в ширину дейкстра кратчайший путь количество путей компоненты связности топологическая 2027" data-new="1">
+  <div class="kicker">Задание 23 · новая тема в 2027</div>
+  <h1>Алгоритмические задачи на графах</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span><span class="badge w">новое в 2027</span></div>
+  <div class="note"><p>Задание появилось в проекте ЕГЭ-2027. Точный формат открытого банка ещё набирается, поэтому ниже собраны базовые алгоритмы, на которых строятся такие задачи: обход, кратчайший путь, подсчёт путей, связность.</p></div>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Граф</b> G = (V, E). Ориентированный — рёбра со стрелками, взвешенный — у рёбер есть длина.</li>
+    <li>Представления: матрица смежности (n × n) и <b>список смежности</b> (словарь «вершина → соседи»). Для программ удобнее второй.</li>
+    <li><b>Поиск в ширину (BFS)</b>: кратчайший путь по числу рёбер в невзвешенном графе.</li>
+    <li><b>Поиск в глубину (DFS)</b>: обход, компоненты связности, поиск циклов.</li>
+    <li><b>Алгоритм Дейкстры</b>: кратчайшие пути при неотрицательных весах.</li>
+    <li><b>Число путей</b> в графе без циклов (DAG): <code>K(v) = Σ K(u)</code> по всем рёбрам u → v.</li>
+    <li>Дерево — связный граф без циклов, в нём n − 1 ребро.</li>
+  </ul>
+  <h2>Шаблоны</h2>
+<script type="text/x-py">
+from collections import deque, defaultdict
+import heapq
+from functools import lru_cache
+
+# чтение рёбер «u v w» из файла
+g = defaultdict(list)
+for line in open('23.txt'):
+    u, v, w = line.split()
+    g[u].append((v, int(w)))
+    g[v].append((u, int(w)))        # убрать для ориентированного графа
+
+# BFS: кратчайшее число рёбер от s
+def bfs(s):
+    d = {s: 0}; q = deque([s])
+    while q:
+        u = q.popleft()
+        for v, _ in g[u]:
+            if v not in d:
+                d[v] = d[u] + 1; q.append(v)
+    return d
+
+# Дейкстра: кратчайшая длина пути от s
+def dijkstra(s):
+    d = {s: 0}; pq = [(0, s)]
+    while pq:
+        du, u = heapq.heappop(pq)
+        if du > d[u]:
+            continue
+        for v, w in g[u]:
+            if du + w < d.get(v, float('inf')):
+                d[v] = du + w; heapq.heappush(pq, (d[v], v))
+    return d
+
+# компоненты связности
+def components():
+    seen, cnt = set(), 0
+    for s in list(g):
+        if s not in seen:
+            cnt += 1; seen |= set(bfs(s))
+    return cnt
+
+# число путей из s в t в ориентированном графе без циклов
+dag = {'А': ['Б', 'В'], 'Б': ['Г'], 'В': ['Б', 'Г'], 'Г': []}
+@lru_cache(None)
+def paths(u, t):
+    return 1 if u == t else sum(paths(v, t) for v in dag[u])
+print(paths('А', 'Г'))
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Проверьте, ориентирован ли граф: от этого зависит, добавлять ли обратное ребро.</li><li>Дейкстра не работает с отрицательными весами.</li><li>Подсчёт путей через рекурсию корректен только без циклов.</li></ul>
+</section>
+
+<!-- ======================= 24 ======================= -->
+<section class="page" id="t24" data-title="Обработка символьных строк" data-kw="строки подстрока регулярные выражения re скользящее окно длина цепочки файл">
+  <div class="kicker">Задание 24</div>
+  <h1>Обработка символьных строк</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <p>В файле одна длинная строка (до миллиона символов). Нужно найти длину самой длинной подстроки с заданным свойством.</p>
+  <h2>Приёмы</h2>
+  <ul>
+    <li><b>Счётчик подряд</b>: идём по строке, увеличиваем текущую длину или сбрасываем её.</li>
+    <li><b>Скользящее окно</b> (два указателя): правая граница идёт вперёд, левая подтягивается, пока условие нарушено. Работает за O(n).</li>
+    <li><b>Регулярные выражения</b>: <code>re.finditer</code> находит все непересекающиеся совпадения.</li>
+  </ul>
+<script type="text/x-py">
+import re
+s = open('24.txt').readline().strip()
+
+# 1) самая длинная цепочка без двух одинаковых соседних символов
+best = cur = 1
+for i in range(1, len(s)):
+    cur = cur + 1 if s[i] != s[i - 1] else 1
+    best = max(best, cur)
+print(best)
+
+# 2) самая длинная подстрока, где буква D встречается не больше двух раз
+l = cnt = best = 0
+for r, ch in enumerate(s):
+    cnt += ch == 'D'
+    while cnt > 2:
+        cnt -= s[l] == 'D'
+        l += 1
+    best = max(best, r - l + 1)
+print(best)
+
+# 3) регулярное выражение: самая длинная цепочка из пар «гласная+согласная»
+print(max((len(m.group()) for m in re.finditer(r'(?:[AEIOU][BCDFG])+', s)), default=0))
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Не забывайте <code>.strip()</code>: символ перевода строки удлиняет ответ.</li><li>Перебор всех подстрок O(n²) для миллиона символов не уложится во время.</li><li>Регулярка находит непересекающиеся совпадения. Если цепочки могут перекрываться, используйте окно.</li></ul>
+</section>
+
+<!-- ======================= 25 ======================= -->
+<section class="page" id="t25" data-title="Делители и маски чисел" data-kw="делители простые числа маска fnmatch целочисленная информация перебор">
+  <div class="kicker">Задание 25</div>
+  <h1>Обработка целочисленной информации</h1>
+  <div class="badges"><span class="badge">1 балл</span><span class="badge">Python</span></div>
+  <p>Два основных типа: числа с заданным набором делителей и числа, соответствующие маске.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li>Делители ищем до <code>√n</code>: если d делит n, то n / d тоже делитель.</li>
+    <li>Число имеет нечётное количество делителей тогда и только тогда, когда оно полный квадрат.</li>
+    <li>Ровно 3 делителя — у квадратов простых чисел; ровно 4 — у <code>p·q</code> и <code>p³</code>.</li>
+    <li>Маска: <code>?</code> — ровно одна цифра, <code>*</code> — любая последовательность цифр (в том числе пустая).</li>
+  </ul>
+<script type="text/x-py">
+from fnmatch import fnmatch
+
+def divisors(n):
+    d = set()
+    i = 1
+    while i * i <= n:
+        if n % i == 0:
+            d |= {i, n // i}
+        i += 1
+    return sorted(d)
+
+def is_prime(n):
+    return n > 1 and all(n % i for i in range(2, int(n**0.5) + 1))
+
+# 1) числа из [500000; 600000], у которых ровно 4 нетривиальных делителя (без 1 и n)
+for n in range(500000, 600001):
+    d = divisors(n)[1:-1]
+    if len(d) == 4:
+        print(n, max(d))
+
+# 2) числа ≤ 10^10, подходящие под маску 1?2157*4 и кратные 2023
+for n in range(2023 * (10**6 // 2023 + 1), 10**10 + 1, 2023):   # перебор кратных
+    if fnmatch(str(n), '1?2157*4'):
+        print(n, n // 2023)
+</script>
+  <div class="tip"><p>Перебор кратных до 10¹⁰ — это ~5 млн итераций, несколько секунд. Если медленно, генерируйте кандидатов по маске: для <code>*</code> переберите длину вставки от 0 до максимума и все цифры через <code>product</code>.</p></div>
+  <h2>Ловушки</h2>
+  <ul><li>«Нетривиальные делители» — без 1 и самого числа.</li><li>Перебор делителей до n вместо √n слишком медленный.</li><li>Ответ выводят по возрастанию чисел: сортируйте, если генерировали в другом порядке.</li></ul>
+</section>
+
+<!-- ======================= 26 ======================= -->
+<section class="page" id="t26" data-title="Сортировка и жадные алгоритмы" data-kw="сортировка жадный алгоритм файлы архив диск интервалы два указателя">
+  <div class="kicker">Задание 26</div>
+  <h1>Обработка данных с сортировкой</h1>
+  <div class="badges"><span class="badge">2 балла</span><span class="badge">Python</span></div>
+  <p>Большой файл с данными (размеры файлов, интервалы времени, товары и цены). Нужно найти оптимальное значение и ещё одну характеристику. Ответ — два числа.</p>
+  <h2>Приёмы</h2>
+  <ul>
+    <li><b>Жадный алгоритм</b>: на каждом шаге берём локально лучший вариант. Например, чтобы поместить максимум файлов, берём самые маленькие.</li>
+    <li><b>Сортировка с ключом</b>: <code>sorted(a, key=lambda x: (x[0], -x[1]))</code>.</li>
+    <li><b>Задача о заявках</b>: чтобы провести максимум мероприятий без пересечений, сортируем по времени окончания и берём подходящие подряд.</li>
+    <li><b>Метод событий</b>: превращаем интервалы в точки «+1 начало / −1 конец», сортируем, проходим счётчиком.</li>
+  </ul>
+<script type="text/x-py">
+# максимум файлов на диск объёмом S и наибольший возможный размер файла при этом
+f = open('26.txt')
+S, N = map(int, f.readline().split())
+a = sorted(int(x) for x in f)
+
+total = cnt = 0
+while cnt < N and total + a[cnt] <= S:
+    total += a[cnt]
+    cnt += 1
+
+free = S - (total - a[cnt - 1])                      # место без последнего взятого файла
+biggest = max(x for x in a[cnt - 1:] if x <= free)   # заменяем его самым большим подходящим
+print(cnt, biggest)
+
+# метод событий: наибольшее число одновременно занятых интервалов
+iv = [(1, 5), (2, 6), (4, 8)]
+ev = sorted([(l, 1) for l, r in iv] + [(r, -1) for l, r in iv])
+cur = best = 0
+for _, d in ev:
+    cur += d; best = max(best, cur)
+print(best)
+</script>
+  <h2>Ловушки</h2>
+  <ul><li>Проверяйте решение на маленьком примере из условия: он всегда дан.</li><li>При равных временах порядок событий «конец раньше начала» или наоборот меняет ответ. Сверяйтесь с условием о границах.</li><li>За одно верное число из двух дают 1 балл: выписывайте оба, даже если не уверены во втором.</li></ul>
+</section>
+
+<!-- ======================= 27 ======================= -->
+<section class="page" id="t27" data-title="Анализ данных: кластеры" data-kw="кластеры кластеризация центр кластера расстояние точки звёзды анализ данных 2027">
+  <div class="kicker">Задание 27</div>
+  <h1>Анализ данных: кластеризация</h1>
+  <div class="badges"><span class="badge">2 балла</span><span class="badge">Python</span><span class="badge w">ответ одной строкой в 2027</span></div>
+  <p>В файле координаты точек (звёзды, объекты на карте), которые образуют несколько кластеров. Нужно найти центр каждого кластера и вычислить по ним характеристику, например средние координаты центров, умноженные на 10 000.</p>
+  <h2>Теория</h2>
+  <ul>
+    <li><b>Кластер</b>: группа точек, близких друг к другу и далёких от остальных.</li>
+    <li><b>Центр кластера</b> (по условию ЕГЭ): точка самого кластера, у которой <b>сумма расстояний до остальных точек кластера минимальна</b>. Это не среднее арифметическое координат.</li>
+    <li>Расстояние: евклидово <code>√((x₁−x₂)² + (y₁−y₂)²)</code>, в Python <code>math.dist</code>.</li>
+    <li>Кластеры можно разделить прямыми по графику (scatter) или автоматически: точки в одном кластере, если между ними есть цепочка соседей ближе ε.</li>
+    <li>Аномалии (выбросы) не входят ни в один кластер: их надо отбросить.</li>
+  </ul>
+<script type="text/x-py">
+from math import dist
+
+pts = []
+for line in open('27A.txt'):
+    p = line.replace(',', '.').split()
+    if len(p) >= 2:
+        try:
+            pts.append((float(p[0]), float(p[1])))
+        except ValueError:
+            pass                                    # заголовок
+
+# 1) кластеризация: соседи ближе eps попадают в один кластер
+def clusters(pts, eps):
+    left = set(range(len(pts))); res = []
+    while left:
+        stack = [left.pop()]; cl = []
+        while stack:
+            i = stack.pop(); cl.append(pts[i])
+            near = [j for j in left if dist(pts[i], pts[j]) < eps]
+            for j in near:
+                left.remove(j); stack.append(j)
+        res.append(cl)
+    return res
+
+def center(cl):
+    return min(cl, key=lambda p: sum(dist(p, q) for q in cl))
+
+cls = [c for c in clusters(pts, 1.0) if len(c) > 5]   # мелкие группы = выбросы
+cs = [center(c) for c in cls]
+px = sum(c[0] for c in cs) / len(cs)
+py = sum(c[1] for c in cs) / len(cs)
+print(int(px * 10000), int(py * 10000))
+</script>
+  <h2>Как подобрать ε и проверить</h2>
+<script type="text/x-py">
+import matplotlib.pyplot as plt
+plt.scatter([p[0] for p in pts], [p[1] for p in pts], s=2)
+plt.axis('equal'); plt.show()
+</script>
+  <p>Посмотрите на график: сколько кластеров и какие расстояния между ними. Подберите ε так, чтобы число кластеров совпало с видимым. Для файла B (десятки тысяч точек) поиск центра по всем парам медленный: сначала разделите кластеры по прямым, затем ищите центр только внутри каждого кластера.</p>
+  <h2>Ловушки</h2>
+  <ul><li>В файлах из LibreOffice дробная часть может отделяться запятой.</li><li>«Целая часть» — <code>int()</code>, не <code>round()</code>. Для отрицательных чисел уточните условие.</li><li>В 2027 году ответ — одна строка из двух чисел (проект демоверсии). Смотрите формат в бланке.</li></ul>
+</section>
+
+<div style="max-width:780px;margin:0 auto">
+  <nav class="pager" id="pager" aria-label="Соседние задания"></nav>
+</div>
+</main>
+</div>
+
+<script>
+(function(){
+  // ---------- подсветка Python ----------
+  var KW = /^(?:def|return|if|elif|else|for|while|in|not|and|or|import|from|as|True|False|None|lambda|break|continue|pass|try|except|with|is|yield|global)$/;
+  var BI = /^(?:print|range|len|int|str|float|sum|min|max|abs|sorted|set|list|dict|tuple|open|map|zip|enumerate|bin|oct|hex|any|all|round)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hl(code){
+    var re = /(#[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)/g;
+    var out = '', last = 0, m;
+    while ((m = re.exec(code))){
+      out += esc(code.slice(last, m.index));
+      var t = esc(m[0]);
+      if (m[1]) out += '<span class="cm">'+t+'</span>';
+      else if (m[2]) out += '<span class="st">'+t+'</span>';
+      else if (m[3]) out += '<span class="nu">'+t+'</span>';
+      else if (KW.test(m[4])) out += '<span class="kw">'+t+'</span>';
+      else if (BI.test(m[4])) out += '<span class="fn">'+t+'</span>';
+      else out += t;
+      last = re.lastIndex;
+    }
+    return out + esc(code.slice(last));
+  }
+  document.querySelectorAll('script[type="text/x-py"]').forEach(function(s){
+    var src = s.textContent.replace(/^\n/, '').replace(/\s+$/, '');
+    var wrap = document.createElement('div'); wrap.className = 'code';
+    var pre = document.createElement('pre'); var c = document.createElement('code');
+    c.innerHTML = hl(src); pre.appendChild(c);
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'copy'; b.textContent = 'Копировать';
+    b.addEventListener('click', function(){
+      try {
+        navigator.clipboard.writeText(src).then(function(){b.textContent='Скопировано';setTimeout(function(){b.textContent='Копировать';},1500);},
+          function(){b.textContent='Выделите вручную';});
+      } catch(e){ b.textContent='Выделите вручную'; }
+    });
+    wrap.appendChild(b); wrap.appendChild(pre);
+    s.parentNode.replaceChild(wrap, s);
+  });
+
+  // ---------- навигация ----------
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var order = ['home','python'];
+  var list = [
+    [1,'t1'],[2,'t2'],[3,'t3'],[4,'t4'],[5,'t5'],[6,'t6'],[7,'t7'],[8,'t8'],[9,'t9'],[10,'t10'],
+    [11,'t11'],[12,'t12'],[13,'t13'],[14,'t14'],[15,'t15'],[16,'t16'],[17,'t17'],[18,'t18'],
+    ['19–21','t19'],[22,'t22'],[23,'t23'],[24,'t24'],[25,'t25'],[26,'t26'],[27,'t27']
+  ];
+  list.forEach(function(x){order.push(x[1]);});
+  function byId(id){return document.getElementById(id);}
+  var nav = byId('nav');
+  function li(html){var l=document.createElement('li');l.innerHTML=html;nav.appendChild(l);return l;}
+  li('<a href="#home" data-id="home"><span class="num">—</span><span>Обзор и изменения 2027</span></a>');
+  li('<a href="#python" data-id="python"><span class="num">Py</span><span>Шпаргалка Python</span></a>');
+  var sep = li('<div class="sep">Часть с кратким ответом</div>');
+  list.forEach(function(x){
+    var p = byId(x[1]);
+    if (x[0] === 26) li('<div class="sep">Задания по 2 балла</div>');
+    var l = li('<a href="#'+x[1]+'" data-id="'+x[1]+'"><span class="num">'+x[0]+'</span><span>'+p.dataset.title+(p.dataset.new?'<span class="new">2027</span>':'')+'</span></a>');
+  });
+  // плитки на главной
+  var tiles = byId('tiles');
+  for (var n=1;n<=27;n++){
+    var id = (n>=19&&n<=21)?'t19':'t'+n, p = byId(id);
+    var a = document.createElement('a'); a.href = '#'+id; a.className = 'tile'+(p.dataset.new?' ch':'');
+    a.innerHTML = '<b>'+n+'</b><span>'+p.dataset.title+'</span>';
+    tiles.appendChild(a);
+  }
+  var alias = {t20:'t19', t21:'t19'};
+  function show(){
+    var h = (location.hash||'').slice(1); if (alias[h]) h = alias[h];
+    if (!byId(h) || !byId(h).classList.contains('page')) h = 'home';
+    pages.forEach(function(p){p.classList.toggle('show', p.id===h);});
+    nav.querySelectorAll('a').forEach(function(a){a.classList.toggle('active', a.dataset.id===h);});
+    var cur = byId(h);
+    byId('topTitle').textContent = (cur.querySelector('.kicker')||{}).textContent && h.charAt(0)==='t' ? cur.querySelector('.kicker').textContent.split('·')[0].trim()+' · '+cur.dataset.title : cur.dataset.title;
+    var i = order.indexOf(h), pg = byId('pager'), s = '';
+    if (i>0){var pr=byId(order[i-1]);s+='<a href="#'+order[i-1]+'">← '+pr.dataset.title+'</a>';} else s+='<span></span>';
+    if (i<order.length-1){var nx=byId(order[i+1]);s+='<a href="#'+order[i+1]+'">'+nx.dataset.title+' →</a>';}
+    pg.innerHTML = s;
+    byId('side').classList.remove('open');
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', show); show();
+
+  // поиск
+  byId('q').addEventListener('input', function(){
+    var q = this.value.trim().toLowerCase(), any = false;
+    nav.querySelectorAll('li').forEach(function(l){
+      var a = l.querySelector('a');
+      if (!a){ l.style.display = q ? 'none' : ''; return; }
+      var p = byId(a.dataset.id);
+      var hit = !q || (p.dataset.title+' '+(p.dataset.kw||'')+' '+a.textContent).toLowerCase().indexOf(q) >= 0;
+      l.style.display = hit ? '' : 'none'; if (hit) any = true;
+    });
+    byId('noRes').style.display = any ? 'none' : 'block';
+  });
+
+  // мобильное меню
+  byId('openNav').addEventListener('click', function(){byId('side').classList.add('open');});
+  byId('closeNav').addEventListener('click', function(){byId('side').classList.remove('open');});
+
+  // тема
+  var root = document.documentElement;
+  try { var t = localStorage.getItem('ege-theme'); if (t) root.setAttribute('data-theme', t); } catch(e){}
+  byId('themeBtn').addEventListener('click', function(){
+    var dark = root.getAttribute('data-theme') ? root.getAttribute('data-theme')==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var nt = dark ? 'light' : 'dark'; root.setAttribute('data-theme', nt);
+    try { localStorage.setItem('ege-theme', nt); } catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
